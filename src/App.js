@@ -1,25 +1,31 @@
-import logo from './logo.svg';
-import './App.css';
+import React from 'react';
+import List from './components/List';
+import { BrowserRouter, Route, Routes, Link } from 'react-router-dom';
+import ListIcon from './components/ListIcon';
 
-function App() {
+const App = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <BrowserRouter>
+      {/* <ListIcon/> */}
+        <h1>ToDo List</h1>
+        <button>
+          <Link to="/all">All</Link>
+        </button>
+        <button>
+          <Link to="/done">Done</Link>
+        </button>
+        <button>
+          <Link to="/notdone">Not-Done</Link>
+        </button>
+        <Routes>
+          <Route path="/all" exact element={<List mode="all" />}></Route>
+          <Route path="/done" exact element={<List mode="done" />}></Route>
+          <Route path="/notdone" exact element={<List mode="notdone" />}></Route>
+        </Routes>
+      </BrowserRouter>
+    </>
   );
-}
+};
 
 export default App;

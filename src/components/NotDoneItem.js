@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React from 'react';
+import Checkbox from './Checkbox';
 
 const NotDoneItem = ({ item }) => {
   return (
     <li>
       <label>
-        <input type="checkbox" checked={false} readOnly />
+        <Checkbox type="checkbox" checked={false} readOnly />
         {item.title}
       </label>
     </li>

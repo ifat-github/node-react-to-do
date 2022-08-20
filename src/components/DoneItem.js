@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Checkbox from './Checkbox';
 
 const DoneItem = ({ item, batchingFunc }) => {
   const [isBatchChecked, setIsBatchChecked] = useState(false);
@@ -11,7 +12,7 @@ const DoneItem = ({ item, batchingFunc }) => {
   return (
     <li>
       <label>
-        <input
+        <Checkbox
           type="checkbox"
           data-testid={`done-checkbox-${item._id}`}
           checked={isBatchChecked}

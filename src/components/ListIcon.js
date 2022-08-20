@@ -1,7 +1,10 @@
 import * as React from "react"
 
-const ListIcon = () => (
+const ListIcon = ({ height, width }) => (
   <svg
+  fill="white"
+    width={width}
+    height={height}
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 297 297"
     style={{
@@ -14,4 +17,4 @@ const ListIcon = () => (
   </svg>
 )
 
-export default ListIcon
+export default ListIcon;

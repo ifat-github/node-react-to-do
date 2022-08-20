@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import Checkbox from "./Checkbox";
 
 const Item = ({ item }) => {
   const [isChecked, setIsChecked] = useState(item.isDone);
@@ -22,9 +23,9 @@ const Item = ({ item }) => {
     <li>
       <label>
         {isChecked ? (
-          <input type="checkbox" checked={isChecked} data-testid={`all-done-checkbox-${item._id}`} readOnly />
+          <Checkbox type="checkbox" checked={isChecked} data-testid={`all-done-checkbox-${item._id}`} readOnly />
         ) : (
-          <input type="checkbox" checked={isChecked} data-testid={`all-notdone-checkbox-${item._id}`} onChange={() => handleCheck(isChecked)} />
+          <Checkbox type="checkbox" checked={isChecked} data-testid={`all-notdone-checkbox-${item._id}`} onChange={() => handleCheck(isChecked)} />
         )}
         {item.title}
       </label>

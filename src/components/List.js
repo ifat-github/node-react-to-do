@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import Item from './Item';
 import NotDoneItem from './NotDoneItem';
 import DoneItem from './DoneItem';
-import { Container } from './styles/Container.styled';
+import styled from 'styled-components';
+import { colors } from '../styles/styles';
 
 const List = ({ mode }) => {
   const batchToNotDone = [];
@@ -55,44 +56,37 @@ const List = ({ mode }) => {
     batchToNotDone.push(id);
   };
 
-  const markNotDone = (items) => {
+  const markNotDone = async (items) => {
     if (items.length > 1) {
-      items.map((item) =>
-        fetch(`http://localhost:3000/todos/${item._id}`, {
-          method: 'PATCH',
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ isDone: false })
-        })
-      );
+      const dataById = items.map(async (item) =>
+      {
+        try {
+          await fetch(`http://localhost:3000/todos/${item._id}`, {
+            method: 'PATCH',
+            headers: {
+              Accept: 'application/json',
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ isDone: false })
+          })
+        } catch (e) {
+          console.log('Something went wrong.');
+        }
+      });
+      await Promise.all(dataById);
+      console.log("unmark");
       setAlert(true);
     }
   };
 
   return (
-    <>
     <Container>
-      {mode === 'all' ? (
-        <div>
-          <label data-testid="create">
-            Create a new ToDo item:
-            <input type="text" onChange={event => setItemInput(event.target.value)} value={itemInput}></input>
-            <button onClick={() => createToDo()}>Save</button>
-          </label>
-        </div>
-      ) : (
-        ''
-      )}
-      <div>
-        <label data-testid="search">
-          Search a ToDo item:
-          <input data-testid="search-value" type="text" onChange={event => setSearchValue(event.target.value)}></input>
-        </label>
-      </div>
-      <div>
-        <ul>
+      
+        <Label data-testid="search">
+          <Input data-testid="search-value" type="text" onChange={event => setSearchValue(event.target.value)} placeholder={searchValue || 'Search a task (in "All")' }></Input>
+        </Label>
+      <Items>
+        <UL style={{ listStyle: "none" }}>
           {searchValue
             ? allItems
                 .filter((item) => item.title.toLowerCase().includes(searchValue.toLowerCase()))
@@ -106,18 +100,67 @@ const List = ({ mode }) => {
             : allItems
                 .filter((item) => !item.isDone)
                 .map((item) => <NotDoneItem key={item._id} item={item} />)}
-        </ul>
-      </div>
+        </UL>
+      </Items>
       {mode === 'done' ? (
-        <div>
-          <button data-testid="mark-not-done" onClick={() => markNotDone(batchToNotDone)}>Move to Not-Done</button>
-        </div>
+          <Button data-testid="mark-not-done" onClick={() => markNotDone(batchToNotDone)}>Move selected items to Not-Done</Button>
       ) : (
         ''
       )}
-      </Container>
-    </>
+      {mode === 'all' ? (
+          <Label data-testid="create">
+            <Input type="text" onChange={event => setItemInput(event.target.value)} placeholder={itemInput || 'Add a task' }></Input>
+            <Button onClick={() => createToDo()}>Save</Button>
+          </Label>
+      ) : (
+        ''
+      )}
+    </Container>
   );
 };
+
+const Label = styled.label`
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  padding: 4px 0;
+`;
+
+const Input = styled.input`
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 15px;
+  color: #fff;
+  border: none;
+  padding: 10px 24px;
+  margin: 20px;
+`;
+
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
+
+const Items = styled.div`
+  background-color: rgba(255, 255, 255, 10%);
+  border-radius: 15px;
+  padding: 45px 24px;
+  flex-direction: column;
+  margin-bottom: 15px;
+`;
+
+const Button = styled.button`
+  background: ${colors.primary};
+  border: none;
+  border-radius: 15px;
+  color: #000;
+  height: 46px;
+  padding-left: 30px;
+  padding-right: 30px;
+`
+
+const UL = styled.ul`
+  padding: 0 30px;
+`
 
 export default List;

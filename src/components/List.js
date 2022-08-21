@@ -5,32 +5,32 @@ import styled from 'styled-components';
 import { colors } from '../styles/styles';
 
 const List = ({ mode }) => {
-  const [batchToNotDone, setBatchToNotDone] = useState([]);
-  const [searchValue, setSearchValue] = useState('');
   const [allItems, setAllItems] = useState([]);
   const [alert, setAlert] = useState('');
   const [itemInput, setItemInput] = useState('');
   const [emptyState, setEmptyState] = useState(true);
+  const [searchValue, setSearchValue] = useState('');
+  const [batchToNotDone, setBatchToNotDone] = useState([]);
 
   useEffect(() => {
     const getItems = async () => {
       const data = await fetch('http://localhost:3000/todos');
       const json = await data.json();
-      const filterSearch =
+      const searchFilter =
         searchValue ?
           json.filter((item) => item.title.toLowerCase().includes(searchValue.toLowerCase()))
           : json;
 
       const modeFilter =
         mode === 'all'
-          ? filterSearch
+          ? searchFilter
           : mode === 'done'
-            ? filterSearch
+            ? searchFilter
               .filter((item) => item.isDone)
-            : filterSearch
+            : searchFilter
               .filter((item) => !item.isDone);
       setAllItems(modeFilter);
-      modeFilter === [] ? setEmptyState(true) : setEmptyState(false);
+      modeFilter.length === 0 ? setEmptyState(true) : setEmptyState(false);
     };
 
     getItems().catch(console.error);
@@ -46,6 +46,7 @@ const List = ({ mode }) => {
 
   useEffect(() => {
     setBatchToNotDone([]);
+    setSearchValue('');
   }, [mode]);
 
   const createToDo = async () => {
@@ -102,39 +103,39 @@ const List = ({ mode }) => {
     }
   };
 
-  console.log(allItems);
-
   return (
     <Container>
       {
         alert
       }
-      <Label data-testid="search">
-        <Input data-testid="search-value" type="text" onChange={event => setSearchValue(event.target.value)} placeholder={searchValue || 'Search a task (in "All")'}></Input>
-      </Label>
-      <Items>
-        {
-          emptyState && <p>Empty</p>
-        }
-        <UL style={{ listStyle: "none" }}>
-          {
+      {
+        emptyState && !searchValue ? <p>List is empty.</p> :
+          <><Label data-testid="search">
+            <Input data-testid="search-value" type="text" onChange={event => setSearchValue(event.target.value)} placeholder={searchValue || 'Search a task'}></Input>
+          </Label>
 
-            mode === 'all'
-              ? allItems.map((item) => item.isDone ? <DoneItem key={item._id} item={item} mode={mode} /> : <NotDoneItem key={item._id} item={item} func={setAlert} mode={mode} />)
-              : mode === 'done'
-                ? allItems
-                  .map((item) => <DoneItem key={item._id} item={item} batchingFunc={batch} mode={mode} />)
-                : allItems
-                  .map((item) => <NotDoneItem key={item._id} item={item} mode={mode} func={setAlert} />)
-          }
-        </UL>
-      </Items>
-      {mode === 'done' ? (
+            <Items>
+              <UL style={{ listStyle: "none" }}>
+                {
+
+                  mode === 'all'
+                    ? allItems.map((item) => item.isDone ? <DoneItem key={item._id} item={item} mode={mode} /> : <NotDoneItem key={item._id} item={item} func={setAlert} mode={mode} />)
+                    : mode === 'done'
+                      ? allItems
+                        .map((item) => <DoneItem key={item._id} item={item} batchingFunc={batch} mode={mode} />)
+                      : allItems
+                        .map((item) => <NotDoneItem key={item._id} item={item} mode={mode} func={setAlert} />)
+                }
+              </UL>
+            </Items>
+          </>
+      }
+      {mode === 'done' && !emptyState ? (
         <Button data-testid="mark-not-done" onClick={() => markNotDone(batchToNotDone)} disabled={batchToNotDone.length <= 1} >Move selected items to Not-Done</Button>
       ) : (
         ''
       )}
-      {mode === 'all' ? (
+      {mode === 'all' && !emptyState ? (
         <Label data-testid="create">
           <Input type="text" onChange={event => setItemInput(event.target.value)} placeholder={itemInput || 'Add a task'}></Input>
           <Button onClick={() => createToDo()}>Save</Button>
@@ -145,8 +146,6 @@ const List = ({ mode }) => {
     </Container>
   );
 };
-
-
 
 const Label = styled.label`
   font-size: 18px;

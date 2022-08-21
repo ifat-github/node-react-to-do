@@ -1,12 +1,12 @@
 import { createGlobalStyle } from "styled-components";
 
 export const colors = {
-    primary: "#FFC93F"
+    primary: "#ced680"
 };
 
 export const GlobalStyle = createGlobalStyle`
     body {
-        background: #222;
+        background: #093333;
         color: #fff;
     }
 

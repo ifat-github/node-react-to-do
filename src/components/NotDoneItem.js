@@ -1,11 +1,28 @@
-import React from 'react';
-import Checkbox from './Checkbox';
+import React, { useState } from "react";
 
-const NotDoneItem = ({ item }) => {
+const NotDoneItem = ({ item, func, mode }) => {
+  const [isChecked, setIsChecked] = useState(item.isDone);
+
+  const handleCheck = async (checked) => {
+    setIsChecked(!checked);
+    if (mode === "all") {
+      func('Item marked as done.');
+      const updatedItem = { isDone: true }
+
+      await fetch(`http://localhost:3000/todos/${item._id}`, {
+        method: 'PATCH',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(updatedItem)
+      });
+    }
+  };
+
   return (
-    <li>
+    <li data-testid={`notdone-${item._id}`} onClick={() => handleCheck(isChecked)}>
       <label>
-        <Checkbox type="checkbox" checked={false} readOnly />
         {item.title}
       </label>
     </li>

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Checkbox from './Checkbox';
 
-const DoneItem = ({ item, batchingFunc }) => {
+const DoneItem = ({ item, batchingFunc, mode }) => {
   const [isBatchChecked, setIsBatchChecked] = useState(false);
 
   const handleCheck = (isChecked) => {
@@ -12,13 +12,19 @@ const DoneItem = ({ item, batchingFunc }) => {
   return (
     <li>
       <label>
-        <Checkbox
-          type="checkbox"
-          data-testid={`done-checkbox-${item._id}`}
-          checked={isBatchChecked}
-          onChange={() => handleCheck(isBatchChecked)}
-        />
-        {item.title}
+        <s>
+          {
+            mode === "all" ?
+              ''
+              : <Checkbox
+                type="checkbox"
+                data-testid={`done-${item._id}`}
+                checked={isBatchChecked}
+                onChange={() => handleCheck(isBatchChecked)}
+              />
+          }
+          {item.title}
+        </s>
       </label>
     </li>
   );

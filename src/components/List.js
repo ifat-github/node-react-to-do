@@ -131,7 +131,7 @@ const List = ({ mode }) => {
           </>
       }
       {mode === 'done' && !emptyState ? (
-        <Button data-testid="mark-not-done" onClick={() => markNotDone(batchToNotDone)} disabled={batchToNotDone.length <= 1} >Move selected items to Not-Done</Button>
+        <Button data-testid="mark-not-done" onClick={() => markNotDone(batchToNotDone)} disabled={Boolean(batchToNotDone.length <= 1)} >Move selected items to Not-Done</Button>
       ) : (
         ''
       )}

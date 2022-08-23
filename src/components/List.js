@@ -109,26 +109,26 @@ const List = ({ mode }) => {
         alert
       }
       {
-        emptyState && !searchValue ? <p>List is empty.</p> :
-          <><Label data-testid="search">
+        emptyState & !searchValue ? '' :
+          <Label data-testid="search">
             <Input data-testid="search-value" type="text" onChange={event => setSearchValue(event.target.value)} placeholder={searchValue || 'Search a task'}></Input>
           </Label>
-
-            <Items>
-              <UL style={{ listStyle: "none" }}>
-                {
-
-                  mode === 'all'
-                    ? allItems.map((item) => item.isDone ? <DoneItem key={item._id} item={item} mode={mode} /> : <NotDoneItem key={item._id} item={item} func={setAlert} mode={mode} />)
-                    : mode === 'done'
-                      ? allItems
-                        .map((item) => <DoneItem key={item._id} item={item} batchingFunc={batch} mode={mode} />)
-                      : allItems
-                        .map((item) => <NotDoneItem key={item._id} item={item} mode={mode} func={setAlert} />)
-                }
-              </UL>
-            </Items>
-          </>
+      }
+      {
+        emptyState ? <p>List is empty.</p> :
+          <Items>
+            <UL style={{ listStyle: "none" }}>
+              {
+                mode === 'all'
+                  ? allItems.map((item) => item.isDone ? <DoneItem key={item._id} item={item} mode={mode} /> : <NotDoneItem key={item._id} item={item} func={setAlert} mode={mode} />)
+                  : mode === 'done'
+                    ? allItems
+                      .map((item) => <DoneItem key={item._id} item={item} batchingFunc={batch} mode={mode} />)
+                    : allItems
+                      .map((item) => <NotDoneItem key={item._id} item={item} mode={mode} func={setAlert} />)
+              }
+            </UL>
+          </Items>
       }
       {mode === 'done' && !emptyState ? (
         <Button data-testid="mark-not-done" onClick={() => markNotDone(batchToNotDone)} disabled={Boolean(batchToNotDone.length <= 1)} >Move selected items to Not-Done</Button>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import NotDoneItem from './NotDoneItem';
 import DoneItem from './DoneItem';
 import styled from 'styled-components';
@@ -11,6 +11,32 @@ const List = ({ mode }) => {
   const [emptyState, setEmptyState] = useState(true);
   const [searchValue, setSearchValue] = useState('');
   const [batchToNotDone, setBatchToNotDone] = useState([]);
+
+  const createToDo = useCallback(async () => {
+    const newToDo = { title: itemInput, isDone: false };
+
+    if (itemInput !== '') {
+      try {
+        const res = await fetch('http://localhost:3000/todos', {
+          method: 'POST',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(newToDo)
+        });
+
+        if (res.status === 200) {
+          setItemInput('');
+          const newItemJson = await res.json();
+          const allItemsCopy = [...allItems, newItemJson];
+          setAllItems(allItemsCopy);
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    }
+  }, [allItems, itemInput]);
 
   useEffect(() => {
     const getItems = async () => {
@@ -49,31 +75,6 @@ const List = ({ mode }) => {
     setSearchValue('');
   }, [mode]);
 
-  const createToDo = async () => {
-    const newToDo = { title: itemInput, isDone: false };
-
-    if (itemInput !== '') {
-      try {
-        const res = await fetch('http://localhost:3000/todos', {
-          method: 'POST',
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(newToDo)
-        });
-
-        if (res.status === 200) {
-          setItemInput('');
-          const newItemJson = await res.json();
-          const allItemsCopy = [...allItems, newItemJson];
-          setAllItems(allItemsCopy);
-        }
-      } catch (e) {
-        console.log(e);
-      }
-    }
-  };
 
   const batch = (item) => {
     if (!batchToNotDone.includes(item)) {
@@ -140,7 +141,7 @@ const List = ({ mode }) => {
       {mode === 'all' && !emptyState ? (
         <Label data-testid="create">
           <Input type="text" onChange={event => setItemInput(event.target.value)} placeholder={itemInput || 'Add a task'}></Input>
-          <Button onClick={() => createToDo()}>Save</Button>
+          <Button onClick={createToDo}>Save</Button>
         </Label>
       ) : (
         ''

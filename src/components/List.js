@@ -65,7 +65,9 @@ const List = ({ mode }) => {
 
         if (res.status === 200) {
           setItemInput('');
-          setAlert('Item added succesfully.');
+          const newItemJson = await res.json();
+          const allItemsCopy = [...allItems, newItemJson];
+          setAllItems(allItemsCopy);
         }
       } catch (e) {
         console.log(e);
